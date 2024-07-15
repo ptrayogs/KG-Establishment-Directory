@@ -48,13 +48,13 @@ MERGE (k:KabupatenKota {kako_id: line.kako_id})
 MERGE (e)-[:HAS_KAKO]->(k)
 
 WITH line, e
-WHERE line.kategori_kbli IS NOT NULL AND line.kategori_kbli <> ''
-MERGE (c:KategoriKBLI {kategori_kbli: line.kategori_kbli})
+WHERE line.kategori_id IS NOT NULL AND line.kategori_id <> ''
+MERGE (c:KategoriKBLI {kategori_id: line.kategori_id})
 MERGE (e)-[:HAS_KATEGORI_KBLI]->(c)
 
 WITH line, e
-WHERE line.golongan_kbli IS NOT NULL AND line.golongan_kbli <> ''
-MERGE (g:GolonganKBLI {golongan_kbli: line.golongan_kbli})
+WHERE line.golongan_id IS NOT NULL AND line.golongan_id <> ''
+MERGE (g:GolonganKBLI {golongan_id: line.golongan_id})
 MERGE (e)-[:HAS_GOLONGAN_KBLI]->(g)
 
 WITH line, e
