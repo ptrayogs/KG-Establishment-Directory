@@ -48,11 +48,6 @@ MERGE (k:KabupatenKota {kako_id: line.kako_id})
 MERGE (e)-[:HAS_KAKO]->(k)
 
 WITH line, e
-WHERE line.kbli IS NOT NULL AND line.kbli <> ''
-MERGE (b:KBLI {kbli: line.kbli})
-MERGE (e)-[:HAS_KODE_KBLI]->(b)
-
-WITH line, e
 WHERE line.kategori_kbli IS NOT NULL AND line.kategori_kbli <> ''
 MERGE (c:KategoriKBLI {kategori_kbli: line.kategori_kbli})
 MERGE (e)-[:HAS_KATEGORI_KBLI]->(c)
@@ -60,7 +55,12 @@ MERGE (e)-[:HAS_KATEGORI_KBLI]->(c)
 WITH line, e
 WHERE line.golongan_kbli IS NOT NULL AND line.golongan_kbli <> ''
 MERGE (g:GolonganKBLI {golongan_kbli: line.golongan_kbli})
-MERGE (e)-[:HAS_GOLONGAN_KBLI]->(g);
+MERGE (e)-[:HAS_GOLONGAN_KBLI]->(g)
+
+WITH line, e
+WHERE line.kbli IS NOT NULL AND line.kbli <> ''
+MERGE (b:KBLI {kbli: line.kbli})
+MERGE (e)-[:HAS_KODE_KBLI]->(b);
 
 CREATE INDEX FOR (e:Perusahaan) ON (e.prov_id);
 CREATE INDEX FOR (e:Perusahaan) ON (e.kako_id);
