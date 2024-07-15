@@ -14,7 +14,7 @@ MERGE (p:Provinsi {prov_id: line.prov_id, prov_nama: line.prov_nama});
 LOAD CSV WITH HEADERS
 FROM 'https://raw.githubusercontent.com/ekotwidodo/KG-Establishment-Directory/main/import/kako.csv' AS line
 MERGE (k:KabupatenKota {kako_id: line.kako_id, kako_nama: line.kako_nama})
-WITH line
+WITH line, k
 MERGE (p:Provinsi {prov_id: line.prov_id})
 MERGE (k)-[:IS_KAKO_OF]->(p);
 
@@ -27,7 +27,7 @@ MERGE (c:KategoriKBLI {kategori_id: line.kategori_id, kategori_nama: line.katego
 LOAD CSV WITH HEADERS
 FROM 'https://raw.githubusercontent.com/ekotwidodo/KG-Establishment-Directory/main/import/golongan_kbli.csv' AS line
 MERGE (g:GolonganKBLI {golongan_id: line.golongan_id, golongan_nama: line.golongan_nama})
-WITH line
+WITH line, g
 MERGE (c:KategoriKBLI {kategori_id: line.kategori_id})
 MERGE (g)-[:IS_KATEGORI_KBLI_OF]->(c);
 
@@ -42,25 +42,20 @@ MERGE (e:Perusahaan {
     })
     ON CREATE SET e = line
 
-WITH line
+MERGE (p:Provinsi {prov_id: line.prov_id})
+MERGE (e)-[:HAS_PROVINSI]->(p)
+MERGE (k:KabupatenKota {kako_id: line.kako_id})
+MERGE (e)-[:HAS_KAKO]->(k)
+
+WITH line, e
 WHERE line.kategori_kbli IS NOT NULL AND line.kategori_kbli <> ''
 MERGE (c:KategoriKBLI {kategori_kbli: line.kategori_kbli})
 MERGE (e)-[:HAS_KATEGORI_KBLI]->(c)
 
-WITH line
+WITH line, e
 WHERE line.golongan_kbli IS NOT NULL AND line.golongan_kbli <> ''
 MERGE (g:GolonganKBLI {golongan_kbli: line.golongan_kbli})
-MERGE (e)-[:HAS_GOLONGAN_KBLI]->(g)
-
-WITH line
-WHERE line.prov_id IS NOT NULL AND line.prov_id <> ''
-MERGE (p:Provinsi {prov_id: line.prov_id})
-MERGE (e)-[:HAS_PROVINSI]->(p)
-
-WITH line
-WHERE line.kako_id IS NOT NULL AND line.kako_id <> ''
-MERGE (k:KabupatenKota {kako_id: line.kako_id})
-MERGE (e)-[:HAS_KAKO]->(k);
+MERGE (e)-[:HAS_GOLONGAN_KBLI]->(g);
 
 CREATE INDEX FOR (e:Perusahaan) ON (e.prov_id);
 CREATE INDEX FOR (e:Perusahaan) ON (e.kako_id);
